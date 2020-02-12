@@ -1,0 +1,14 @@
+// Setup the "brazilGradle" extension to use in the "buildscript {}" block.
+def brazilGradleRepo = project.findProperty('brazilGradleRepo')
+def brazilGradleName = project.findProperty('brazilGradleName')
+
+if (brazilGradleRepo != null && brazilGradleName!= null) {
+    repositories {
+        maven {
+            url = uri(brazilGradleRepo)
+        }
+    }
+    dependencies {
+        "runtimeOnly"(brazilGradleName)
+    }
+}
