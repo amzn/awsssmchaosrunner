@@ -7,7 +7,6 @@ package.AWSSSMChaosRunner = {
             OpenJDK8 = 1.1;
             BrazilGradle = 4.x;
             DVPrefsAndSettingsGradleConfiguration = 1.0;
-            BrazilGradleAWSIdentityBrokerCredentialsRetriever = 4.x;
             BrazilBootstrapAntTask = 1.0;
         };
     };
@@ -17,6 +16,9 @@ package.AWSSSMChaosRunner = {
             AWSSimpleSystemsManagementJavaClient = 1.11.x;
             AWSJavaClientRuntime = 1.11.x;
             AWSJavaClientCore = 1.11.x;
+            KotlinReflect = 1.3.x;
+            Maven-io-github-microutils_kotlin-logging = 1.x;
+            Slf4j = 1.7;
         };
     };
 
@@ -27,6 +29,26 @@ package.AWSSSMChaosRunner = {
             # JUnit 4 and 5 tests, keep this and add 'JUnit-4-12-migration = 5.x;'
             JUnit5 = 5.x;
             OpenJDK8 = 1.1;
+            AssertJ = 3.15;
+            MockK = 1.9.x;
+        };
+    };
+
+    resolves-conflict-dependencies = {
+        1.0 = {
+            Byte-buddy = 1.9.x;
+            Byte-buddy-agent = 1.9.x;
+            Jackson-annotations = 2.8.x;
+            Jackson-core = 2.8.x;
+            Jackson-databind = 2.8.x;
+            KotlinStdlib = 1.3.x;
+            KotlinStdlibCommon = 1.3.x;
+        };
+    };
+
+    runtime-dependencies = {
+        1.0 = {
+            log4j = 2.12;
         };
     };
 

@@ -1,69 +1,21 @@
-/// Use common Prefs Gradle
+// Use common Prefs Gradle
 buildscript {
-  dependencies {
-    classpath brazilGradle.tool('DVPrefsAndSettingsGradleConfiguration')
-    classpath brazilGradle.tool('BrazilGradleAWSIdentityBrokerCredentialsRetriever')
-  }
-}
-
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+    dependencies {
+        classpath brazilGradle.tool('DVPrefsAndSettingsGradleConfiguration')
+    }
 }
 
 apply from: brazilGradle.path('[DVPrefsAndSettingsGradleConfiguration]pkg.configfarm.common.gradle') + '/common.gradle'
 
-/**
- * Put the tests in the main sourceDir
- */
 sourceSets {
-  test {
-    java {
-      srcDirs = ['src/main/java']
+    test {
+        kotlin {
+            srcDirs = ['src/test/kotlin']
+        }
     }
-    kotlin {
-      srcDirs = ['src/main/kotlin']
-    }
-  }
 }
+
 dependencies {
-  //brazilGradle.testbuild() does not include transitive runtime dependencies (https://sage.amazon.com/questions/480261)
-  testImplementation brazilGradle.testrun()
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-}
-
-/*
- We need to copy the certificate to the build folder so that we can also send it in the lambda zip. (see lambda-transform.yml)
- */
-task copyCertificate(type: Copy) {
-  doFirst {
-    mkdir "${brazilGradle.buildDir}/truststore"
-  }
-
-  from file("${brazilGradle.path('run.configfarm.certs')}/certs/InternalAndExternalTrustStore.jks")
-  into file("${brazilGradle.buildDir}/truststore")
-}
-
-
-//Only run source based validation for tests package
-check.dependsOn = [ktlint, "detekt", validateJavaClasspath]
-build.dependsOn += [copyCertificate]
-apply from: brazilGradle.path('[DVPrefsAndSettingsGradleConfiguration]pkg.configfarm.generate-tar.gradle') + '/generate-tar.gradle'
-task release(dependsOn: [build, generateTar])
-
-String propValue(String propertyName, String defaultValue) {
-  (project.hasProperty(propertyName) && project.getProperty(propertyName)) ? project.getProperty(propertyName) : defaultValue
-}
-
-repositories {
-    mavenCentral()
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    //brazilGradle.testbuild() does not include transitive runtime dependencies (https://sage.amazon.com/questions/480261)
+    testImplementation brazilGradle.testrun()
 }
