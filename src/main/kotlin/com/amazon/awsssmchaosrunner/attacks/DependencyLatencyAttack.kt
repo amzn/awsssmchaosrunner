@@ -23,7 +23,7 @@ class DependencyLatencyAttack constructor(
             val chaos = "    - \"sudo tc qdisc add dev eth0 root handle 1: prio priomap 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2\"\n" +
                         "    - \"sudo tc qdisc add dev eth0 parent 1:1 handle 10: netem  delay ${configuration
                                 .otherParameters["networkInterfaceLatencyMs"]}ms $JITTER distribution normal\"\n" +
-                        "    - \"for k in \$(dig +short zenoservice-eu.integ.amazon.com);" +
+                        "    - \"for k in \$(dig +short zenoservice-eu.dub.amazon.com);" +
                     " do echo \$k && sudo tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32  match ip dst \$k/32; done\"\n" +
                         "    - \"sudo tc qdisc show\"\n"
             val scheduledChaosRollback = "    - \"echo \'sudo tc filter del dev eth0 prio 1 && " +
