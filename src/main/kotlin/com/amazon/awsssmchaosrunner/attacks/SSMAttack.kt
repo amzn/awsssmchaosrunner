@@ -61,6 +61,9 @@ interface SSMAttack {
         fun getAttack(ssm: AWSSimpleSystemsManagement, configuration: AttackConfiguration): SSMAttack = when (configuration.name) {
             "NetworkInterfaceLatencyAttack" -> NetworkInterfaceLatencyAttack(ssm, configuration)
             "DependencyLatencyAttack" -> DependencyLatencyAttack(ssm, configuration)
+            "MemoryHogAttack" -> MemoryHogAttack(ssm, configuration)
+            "CPUHogAttack" -> CPUHogAttack(ssm, configuration)
+            "DiskHogAttack" -> DiskHogAttack(ssm, configuration)
             else -> throw NotImplementedError("${configuration.name} is not a valid SSMAttack")
         }
 

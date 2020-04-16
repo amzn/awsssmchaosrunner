@@ -15,6 +15,17 @@ sourceSets {
     }
 }
 
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, include:  [
+                    '**/SSMAttack.class',
+                    '**/NetworkInterfaceLatencyAttack'
+            ])
+        })
+    }
+}
+
 dependencies {
     //brazilGradle.testbuild() does not include transitive runtime dependencies (https://sage.amazon.com/questions/480261)
     testImplementation brazilGradle.testrun()

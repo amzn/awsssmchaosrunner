@@ -20,7 +20,7 @@ class SSMAttackTest {
     }
 
     @Test
-    fun `when getAttack called with BlackholeDNSAttackTest return BlackholeDNSAttackTest`() {
+    fun `when getAttack called with NetworkInterfaceLatencyAttack return NetworkInterfaceLatencyAttack`() {
         val attack = getAttack(ssm,
                 SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
                         "",
