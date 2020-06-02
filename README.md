@@ -4,9 +4,9 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
 ![](./AWSSSMChaosRunner.png)
 
 ### Usage
-1. **Setup permissions for calling SSM from TPSGenerator**
+1. **Setup permissions for calling SSM from tests package**
 
-    This can be done in many different ways. The approach described here generates temporary credentials for AWS SSM on each run of the TPS generator. To enable this the following are needed
+    This can be done in many different ways. The approach described here generates temporary credentials for AWS SSM on each run of the tests. To enable this the following are needed
     
     * An IAM role with the following permissions.  
         ```json
@@ -131,16 +131,16 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
     * [MemoryHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/MemoryHogAttack.kt) - Hogs virtual memory on the fleet.
     * [CPUHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/CPUHogAttack.kt) - Hogs CPU on the fleet.
     * [DiskHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/DiskHogAttack.kt) - Hogs disk space on the fleet.
+    * [DependencyPacketLossAttack](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/DependencyPacketLossAttack.kt) - Drops packets on inbound/outbound calls to a given external dependency.
     
-* **What failure injections are available ?**
+* **What about other failure injections ?**
 
     You're welcome to send pull requests for other failure injections.
     
 * **How is the failure injection rolled back ? / What if AWS SSM fails to stop the failure injection ?**
 
     SSM is not actually used to stop/roll back the failure injection. The failure injection scripts first schedule the failure rollback 
-    (with [at command](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/at.html)) and then start the actual failure injection. This ensures that, barring special cases, the failure 
-    injection will be rolled back at a specified time in the future.
+    (with [at command](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/at.html)) and then start the actual failure injection. This ensures that, barring special cases, the failure injection will be rolled back at a specified time in the future.
 
 * **What languages does AWSSSMChaosRunner support ?**
 
