@@ -25,7 +25,6 @@ out/
 /*bin/
 
 ## Package Files
-*.jar
 *.war
 *.nar
 *.ear
@@ -36,4 +35,3 @@ out/
 ### Gradle
 .gradle/
 **/build/
-wrapper/
