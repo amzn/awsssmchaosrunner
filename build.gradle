@@ -1,11 +1,19 @@
-// Use common Prefs Gradle
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 buildscript {
+    ext.kotlin_version = '1.3+'
+
+    repositories {
+        mavenCentral()
+    }
+
     dependencies {
-        classpath brazilGradle.tool('DVPrefsAndSettingsGradleConfiguration')
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
-apply from: brazilGradle.path('[DVPrefsAndSettingsGradleConfiguration]pkg.configfarm.common.gradle') + '/common.gradle'
+apply plugin: 'kotlin'
 
 sourceSets {
     test {
@@ -15,18 +23,26 @@ sourceSets {
     }
 }
 
-jacocoTestCoverageVerification {
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, include:  [
-                    '**/SSMAttack.class',
-                    '**/NetworkInterfaceLatencyAttack'
-            ])
-        })
-    }
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    //brazilGradle.testbuild() does not include transitive runtime dependencies (https://sage.amazon.com/questions/480261)
-    testImplementation brazilGradle.testrun()
+    implementation 'com.amazonaws:aws-java-sdk-ssm:1.11+'
+    implementation 'io.github.microutils:kotlin-logging:1.6+'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.3+'
+    implementation 'org.slf4j:slf4j-api:1.7+'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6+'
+    testImplementation 'io.mockk:mockk:1.9+'
+    testImplementation 'org.assertj:assertj-core-java8:1.0+'
+    testImplementation 'org.slf4j:slf4j-log4j12:1.8+'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.11+'
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.11+'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6+'
+}
+
+test {
+    useJUnitPlatform()
 }

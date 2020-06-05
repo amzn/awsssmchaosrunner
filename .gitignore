@@ -36,7 +36,4 @@ out/
 ### Gradle
 .gradle/
 **/build/
-gradle/
-gradlew
-gradlew.bat
 wrapper/
