@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package com.amazon.awsssmchaosrunner.attacks
+package software.amazon.awsssmchaosrunner.attacks
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import mu.KotlinLogging
 import java.time.Duration
 
-class DependencyPacketLossAttack constructor(
+class DependencyLatencyAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
+    private val JITTER = "10ms"
     private val log = KotlinLogging.logger { }
     override val documentContent: String
         get() {
@@ -23,11 +24,12 @@ class DependencyPacketLossAttack constructor(
                     "  inputs:\n" +
                     "    runCommand:\n"
             val chaos = "    - \"sudo tc qdisc add dev eth0 root handle 1: prio priomap 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2\"\n" +
-                    "    - \"sudo tc qdisc add dev eth0 parent 1:1 handle 10: netem loss ${configuration.otherParameters["packetLossPercentage"]}%\"\n" +
-                    "    - \"for k in \$(dig +short ${configuration.otherParameters["dependencyEndpoint"]});" +
+                        "    - \"sudo tc qdisc add dev eth0 parent 1:1 handle 10: netem  delay ${configuration
+                                .otherParameters["networkInterfaceLatencyMs"]}ms $JITTER distribution normal\"\n" +
+                        "    - \"for k in \$(dig +short ${configuration.otherParameters["dependencyEndpoint"]});" +
                     " do echo \$k && sudo tc filter add dev eth0 protocol ip parent 1:0 prio 1 u32 match ip dst \$k/32 match ip dport " +
                     "${configuration.otherParameters["dependencyPort"]} 0xffff flowid 1:1; done\"\n" +
-                    "    - \"sudo tc qdisc show\"\n"
+                        "    - \"sudo tc qdisc show\"\n"
             val scheduledChaosRollback = "    - \"echo \'sudo tc filter del dev eth0 prio 1 && " +
                     "sudo tc qdisc del dev eth0 parent 1:1 handle 10: && " +
                     "sudo tc qdisc del dev eth0 root handle 1: prio \' | " +

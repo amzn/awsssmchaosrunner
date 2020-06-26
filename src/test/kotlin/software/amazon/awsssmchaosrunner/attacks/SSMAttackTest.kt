@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package com.amazon.awsssmchaosrunner.attacks
+package software.amazon.awsssmchaosrunner.attacks
 
-import com.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
+import software.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
