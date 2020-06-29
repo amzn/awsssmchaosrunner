@@ -1,19 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-buildscript {
-    ext.kotlin_version = '1.3+'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'maven-publish'
+    id 'signing'
+    id 'org.jetbrains.dokka' version '0.9.18'
 }
 
-apply plugin: 'kotlin'
+group = "software.amazon.awsssmchaosrunner"
+version = "1.0.0"
 
 sourceSets {
     test {
@@ -21,28 +18,101 @@ sourceSets {
             srcDirs = ['src/test/kotlin']
         }
     }
+
+    main {
+        kotlin {
+            srcDirs = ['src/main/kotlin']
+        }
+    }
 }
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    implementation 'com.amazonaws:aws-java-sdk-ssm:1.11+'
-    implementation 'io.github.microutils:kotlin-logging:1.6+'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.3+'
-    implementation 'org.slf4j:slf4j-api:1.7+'
+    implementation 'com.amazonaws:aws-java-sdk-ssm:[1.11,)'
+    implementation 'io.github.microutils:kotlin-logging:[1.6,)'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:[1.3,)'
+    implementation 'org.slf4j:slf4j-api:[1.7,)'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6+'
-    testImplementation 'io.mockk:mockk:1.9+'
-    testImplementation 'org.assertj:assertj-core-java8:1.0+'
-    testImplementation 'org.slf4j:slf4j-log4j12:1.8+'
-    testImplementation 'org.apache.logging.log4j:log4j-core:2.11+'
-    testImplementation 'org.apache.logging.log4j:log4j-api:2.11+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:[5.6,)'
+    testImplementation 'io.mockk:mockk:[1.9,)'
+    testImplementation 'org.assertj:assertj-core-java8:[1.0,)'
+    testImplementation 'org.slf4j:slf4j-log4j12:[1.8,)'
+    testImplementation 'org.apache.logging.log4j:log4j-core:[2.11,)'
+    testImplementation 'org.apache.logging.log4j:log4j-api:[2.11,)'
 
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:[5.6,)'
 }
 
 test {
     useJUnitPlatform()
+}
+
+dokka {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
+}
+
+task sourcesJar(type: Jar) {
+    from "src"
+    classifier = "sources"
+}
+
+task javadocJar(type: Jar) {
+    from dokka
+    classifier = "javadoc"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = "awsssmchaosrunner"
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = "AWSSSMChaosRunner"
+                packaging = "jar"
+                url = "https://github.com/amzn/awsssmchaosrunner"
+                description = "Simple failure injection and chaos testing using AWS Systems Manager (SSM) SendCommand."
+                scm {
+                    connection = "scm:git@github.com:amzn/awsssmchaosrunner.git"
+                    developerConnection = "scm:git@github.com:amzn/awsssmchaosrunner.git"
+                    url = "git@github.com:amzn/awsssmchaosrunner.git"
+                }
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "Prime Video Team"
+                        email = "vjewalik@amazon.com"
+                        organization = "Amazon"
+                        organizationUrl = "https://github.com/amzn"
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://aws.oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven
 }

@@ -62,6 +62,15 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
         ```
     * An IAM user which can assume the above role.
 
+2. **Add `AWSSSMChaosRunner` maven dependency to your tests package** 
+    ```
+    <dependency>
+      <groupId>software.amazon.awsssmchaosrunner</groupId>
+      <artifactId>awsssmchaosrunner</artifactId>
+      <version>1.0.0</version>
+    </dependency> 
+    ```
+
 1. **Initialise the SSM Client**
     ```kotlin
     @Bean
@@ -94,7 +103,10 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
  
 1. **Start the fault injection attack before starting the test and stop it after the test**
     ```kotlin
-    
+    import software.amazon.awsssmchaosrunner.attacks.SSMAttack
+    import software.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
+    ...
+
     @Before
     override fun initialise(args: Array<String>) {
         if (shouldExecuteChaosRunner()) {
