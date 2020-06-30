@@ -93,9 +93,9 @@ publishing {
                 }
                 developers {
                     developer {
-                        name = "Prime Video Team"
+                        name = "Varun Jewalikar"
                         email = "vjewalik@amazon.com"
-                        organization = "Amazon"
+                        organization = "Prime Video"
                         organizationUrl = "https://github.com/amzn"
                     }
                 }

@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/amzn/awsssmchaosrunner.svg)](https://travis-ci.org/amzn/awsssmchaosrunner)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awsssmchaosrunner/awsssmchaosrunner/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awsssmchaosrunner/awsssmchaosrunner)
+[![Javadoc](https://javadoc-badge.appspot.com/software.amazon.awsssmchaosrunner/awsssmchaosrunner.svg?label=javadoc)](http://www.javadoc.io/doc/software.amazon.awsssmchaosrunner/awsssmchaosrunner)
+
 ## AWSSSMChaosRunner
 AWSSSMChaosRunner is a library which simplifies failure injection testing for EC2. It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html) for failure injection.
 
