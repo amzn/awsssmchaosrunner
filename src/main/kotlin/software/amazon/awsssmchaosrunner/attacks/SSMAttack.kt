@@ -68,6 +68,8 @@ interface SSMAttack {
             "MemoryHogAttack" -> MemoryHogAttack(ssm, configuration)
             "CPUHogAttack" -> CPUHogAttack(ssm, configuration)
             "DiskHogAttack" -> DiskHogAttack(ssm, configuration)
+            "AWSServiceLatencyAttack" -> AWSServiceLatencyAttack(ssm, configuration)
+            "AWSServicePacketLossAttack" -> AWSServicePacketLossAttack(ssm, configuration)
             else -> throw NotImplementedError("${configuration.name} is not a valid SSMAttack")
         }
 
