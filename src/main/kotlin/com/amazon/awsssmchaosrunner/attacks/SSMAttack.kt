@@ -18,6 +18,12 @@ interface SSMAttack {
     val documentContent: String
 
     fun documentName(): String? {
+        // If user wants to specify a unique document name, return that. Note: this can produce
+        // dangerous behavior if a user is executing the same attack twice (different names) on the same
+        // resources.
+        if (this.configuration.otherParameters.containsKey("nameSuffix")) {
+            return this.configuration.otherParameters.get("nameSuffix")
+        }
         return this::class.simpleName
     }
 

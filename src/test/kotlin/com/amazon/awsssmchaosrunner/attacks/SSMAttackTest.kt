@@ -44,4 +44,17 @@ class SSMAttackTest {
                     Collections.emptyMap()))
         }
     }
+
+    @Test
+    fun `test when documentName() is called the correct name is returned`() {
+        val attack = getAttack(ssm,
+                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
+                        "",
+                        0,
+                        "",
+                        Collections.emptyList(),
+                        100,
+                        mutableMapOf("nameSuffix" to "NetwotkInterfaceLatencyAttack-1")))
+        assertThat(attack.documentName() == "NetwotkInterfaceLatencyAttack-1")
+    }
 }
