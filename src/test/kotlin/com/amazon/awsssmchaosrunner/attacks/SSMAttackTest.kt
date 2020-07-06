@@ -54,7 +54,32 @@ class SSMAttackTest {
                         "",
                         Collections.emptyList(),
                         100,
-                        mutableMapOf("nameSuffix" to "NetwotkInterfaceLatencyAttack-1")))
+                        mutableMapOf("documentNameSuffix" to "NetwotkInterfaceLatencyAttack-1")))
         assertThat(attack.documentName() == "NetwotkInterfaceLatencyAttack-1")
+    }
+    @Test
+    fun `test when additional document name param does not exist`() {
+        val attack = getAttack(ssm,
+                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
+                        "",
+                        0,
+                        "",
+                        Collections.emptyList(),
+                        100,
+                        emptyMap<String, String>()))
+        assertThat(attack.documentName() == "NetworkInterfaceLatencyAttack")
+    }
+
+    @Test
+    fun `test when additional document name param is empty`() {
+        val attack = getAttack(ssm,
+                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
+                        "",
+                        0,
+                        "",
+                        Collections.emptyList(),
+                        100,
+                        mutableMapOf("documentNameSuffix" to "")))
+        assertThat(attack.documentName() == "NetworkInterfaceLatencyAttack")
     }
 }
