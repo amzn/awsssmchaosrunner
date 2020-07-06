@@ -21,10 +21,7 @@ interface SSMAttack {
         // If user wants to specify a unique document name, return the simple name suffixed with the param.
         // Note: this can produce dangerous behavior if a user is executing the same attack twice (different names) on the same
         // resources.
-        if (this.configuration.otherParameters.containsKey("documentNameSuffix")) {
-            return this::class.simpleName + this.configuration.otherParameters.get("documentNameSuffix")
-        }
-        return this::class.simpleName
+        return this::class.simpleName + this.configuration.otherParameters.getOrDefault("documentNameSuffix", "")
     }
 
     fun start(): Command {
