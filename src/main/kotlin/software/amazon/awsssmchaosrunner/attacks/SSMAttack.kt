@@ -20,10 +20,15 @@ interface SSMAttack {
     val configuration: AttackConfiguration
     val documentContent: String
 
+    /**
+     * SSM createDocument() needs unique document names for creation. Delete the existing SSM document from the SSM AWS UI.
+     *
+     * Use the AttackConfiguration 'documentNameSuffix' parameter if you need to create multiple SSM documents of the same type without
+     * deleting the existing documents. For example: You need to run chaos test A for fleet X and at the same you need to run chaos test
+     * B for fleet Y.
+     * This is an uncommon use-case with potentially dangerous consequences, proceed with caution.
+     */
     fun documentName(): String? {
-        // If user wants to specify a unique document name, return the simple name suffixed with the param.
-        // Note: this can produce dangerous behavior if a user is executing the same attack twice (different names) on the same
-        // resources.
         return this::class.simpleName + this.configuration.otherParameters.getOrDefault("documentNameSuffix", "")
     }
 
@@ -77,13 +82,13 @@ interface SSMAttack {
         }
 
         data class AttackConfiguration(
-            val name: String,
-            val duration: String,
-            val timeoutSeconds: Int,
-            val cloudWatchLogGroupName: String,
-            val targets: List<Target>,
-            val concurrencyPercentage: Int,
-            val otherParameters: Map<String, String>
+                val name: String,
+                val duration: String,
+                val timeoutSeconds: Int,
+                val cloudWatchLogGroupName: String,
+                val targets: List<Target>,
+                val concurrencyPercentage: Int,
+                val otherParameters: Map<String, String>
         )
     }
 }
