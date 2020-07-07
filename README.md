@@ -140,14 +140,20 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
      
 * **What failure injections are available ?**
     
-    * [NetworkInterfaceLatency](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/NetworkInterfaceLatencyAttack.kt) - Adds latency to all inbound/outbound calls to 
+    * [NetworkInterfaceLatency](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/NetworkInterfaceLatencyAttack.kt) - Adds latency to all inbound/outbound calls to 
     a given network interface.
-    * [DependencyLatency](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/DependencyLatencyAttack.kt) - Adds latency to inbound/outbound calls to a given 
+    * [DependencyLatency](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/DependencyLatencyAttack.kt) - Adds latency to inbound/outbound calls to a given 
     external dependency.
-    * [MemoryHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/MemoryHogAttack.kt) - Hogs virtual memory on the fleet.
-    * [CPUHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/CPUHogAttack.kt) - Hogs CPU on the fleet.
-    * [DiskHog](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/DiskHogAttack.kt) - Hogs disk space on the fleet.
-    * [DependencyPacketLossAttack](./src/main/kotlin/com/amazon/awsssmchaosrunner/attacks/DependencyPacketLossAttack.kt) - Drops packets on inbound/outbound calls to a given external dependency.
+    * [MemoryHog](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/MemoryHogAttack.kt) - Hogs virtual memory on the fleet.
+    * [CPUHog](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/CPUHogAttack.kt) - Hogs CPU on the fleet.
+    * [DiskHog](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/DiskHogAttack.kt) - Hogs disk space on the fleet.
+    * [DependencyPacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/DependencyPacketLossAttack.kt) - Drops packets on inbound/outbound calls to a given external dependency.
+    * [AWSServiceLatencyAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/AWSServiceLatencyAttack)
+         \- Adds latency to an AWS service using the CIDR ranges returned
+         from https://ip-ranges.amazonaws.com/ip-ranges.json. This is
+         necessary for services like S3 or DynamoDB where the resolved
+         IPAddress can change during the chaos attack.
+    * [AWSServicePacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/AWSServicePacketLossAttack.kt) - Drops packets to an AWS service using the CIDR ranges returned from https://ip-ranges.amazonaws.com/ip-ranges.json. This is necessary for services like S3 or DynamoDB where the resolved IPAddress can change during the chaos attack.
     
 * **What about other failure injections ?**
 
