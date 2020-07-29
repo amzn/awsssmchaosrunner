@@ -19,14 +19,18 @@ class NetworkInterfaceLatencyAttackTest {
     @BeforeEach
     fun prepTest() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        attack = getAttack(ssm,
-                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
-                        "PT1M",
-                        0,
-                        "",
-                        Collections.emptyList(),
-                        100,
-                        Collections.emptyMap()))
+        attack = getAttack(
+            ssm,
+            SSMAttack.Companion.AttackConfiguration(
+                name = "NetworkInterfaceLatencyAttack",
+                duration = "PT1M",
+                timeoutSeconds = 0,
+                cloudWatchLogGroupName = "",
+                targets = Collections.emptyList(),
+                concurrencyPercentage = 100,
+                otherParameters = Collections.emptyMap()
+            )
+        )
     }
 
     @Test

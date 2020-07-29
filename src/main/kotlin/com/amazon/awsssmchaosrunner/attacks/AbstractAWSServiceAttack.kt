@@ -37,21 +37,21 @@ abstract class AbstractAWSServiceAttack constructor(
     val serviceCidrRangeQuery: String
         get() {
             return "curl -s https://ip-ranges.amazonaws.com/ip-ranges.json | " +
-                    "jq -r '.prefixes[] | " +
-                    "select(.region==\\\"${configuration.otherParameters["region"]}\\\") | " +
-                    "select(.service==\\\"${configuration.otherParameters["service"]}\\\") | " +
-                    ".ip_prefix'"
+                "jq -r '.prefixes[] | " +
+                "select(.region==\\\"${configuration.otherParameters["region"]}\\\") | " +
+                "select(.service==\\\"${configuration.otherParameters["service"]}\\\") | " +
+                ".ip_prefix'"
         }
 
     private val documentHeader: String
         get() {
             return "---\n" +
                 "schemaVersion: '2.2'\n" +
-                        "description: Attack an AWS service\n" +
-                        "mainSteps:\n" +
-                        "- action: aws:runShellScript\n" +
-                        "  name: ${documentName()}\n" +
-                        "  inputs:\n" +
-                        "    runCommand:\n"
+                "description: Attack an AWS service\n" +
+                "mainSteps:\n" +
+                "- action: aws:runShellScript\n" +
+                "  name: ${documentName()}\n" +
+                "  inputs:\n" +
+                "    runCommand:\n"
         }
 }
