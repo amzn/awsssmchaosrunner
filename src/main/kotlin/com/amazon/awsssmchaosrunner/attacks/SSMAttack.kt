@@ -70,6 +70,8 @@ interface SSMAttack {
             "NetworkInterfaceLatencyAttack" -> NetworkInterfaceLatencyAttack(ssm, configuration)
             "DependencyLatencyAttack" -> DependencyLatencyAttack(ssm, configuration)
             "DependencyPacketLossAttack" -> DependencyPacketLossAttack(ssm, configuration)
+            "MultiIPAddressLatencyAttack" -> MultiIPAddressLatencyAttack(ssm, configuration)
+            "MultiIPAddressPacketLossAttack" -> MultiIPAddressPacketLossAttack(ssm, configuration)
             "MemoryHogAttack" -> MemoryHogAttack(ssm, configuration)
             "CPUHogAttack" -> CPUHogAttack(ssm, configuration)
             "DiskHogAttack" -> DiskHogAttack(ssm, configuration)
