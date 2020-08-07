@@ -71,7 +71,7 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
     <dependency>
       <groupId>software.amazon.awsssmchaosrunner</groupId>
       <artifactId>awsssmchaosrunner</artifactId>
-      <version>1.0.0</version>
+      <version>1.2.0</version>
     </dependency> 
     ```
 
@@ -154,6 +154,8 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
          necessary for services like S3 or DynamoDB where the resolved
          IPAddress can change during the chaos attack.
     * [AWSServicePacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/AWSServicePacketLossAttack.kt) - Drops packets to an AWS service using the CIDR ranges returned from https://ip-ranges.amazonaws.com/ip-ranges.json. This is necessary for services like S3 or DynamoDB where the resolved IPAddress can change during the chaos attack.
+    * [MultiIPAddressLatencyAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/MultiIPAddressLatencyAttack.kt) - Adds latencies to calls to a list of dependencies specified by IPAddress. This could be useful for a router -> host kind of a setup.
+    * [MultiIPAddressPacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/MultiIPAddressPacketLossAttack.kt) - Drops packets from calls to a list of dependencies specified by IPAddress. This could be useful for a router -> host kind of a setup.
     
 * **What about other failure injections ?**
 
