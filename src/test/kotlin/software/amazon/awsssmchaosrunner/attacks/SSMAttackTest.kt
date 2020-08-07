@@ -24,65 +24,87 @@ class SSMAttackTest {
 
     @Test
     fun `when getAttack called with NetworkInterfaceLatencyAttack return NetworkInterfaceLatencyAttack`() {
-        val attack = getAttack(ssm,
-                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
-                        "",
-                        0,
-                        "",
-                        Collections.emptyList(),
-                        100,
-                        Collections.emptyMap()))
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "NetworkInterfaceLatencyAttack",
+                        duration = "",
+                        timeoutSeconds = 0,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = Collections.emptyMap()
+                )
+        )
         assertThat(attack).isInstanceOf(NetworkInterfaceLatencyAttack::class.java)
     }
 
     @Test
     fun `when getAttack called with test throws`() {
         assertThrows(NotImplementedError::class.java) {
-            getAttack(ssm, SSMAttack.Companion.AttackConfiguration("test",
-                    "",
-                    0,
-                    "",
-                    Collections.emptyList(),
-                    100,
-                    Collections.emptyMap()))
+            getAttack(
+                    ssm,
+                    SSMAttack.Companion.AttackConfiguration(
+                            name = "test",
+                            duration = "",
+                            timeoutSeconds = 0,
+                            cloudWatchLogGroupName = "",
+                            targets = Collections.emptyList(),
+                            concurrencyPercentage = 100,
+                            otherParameters = Collections.emptyMap()
+                    )
+            )
         }
     }
 
     @Test
     fun `test when documentName() is called the correct name is returned`() {
-        val attack = getAttack(ssm,
-                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
-                        "",
-                        0,
-                        "",
-                        Collections.emptyList(),
-                        100,
-                        mutableMapOf("documentNameSuffix" to "NetwotkInterfaceLatencyAttack-1")))
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "NetworkInterfaceLatencyAttack",
+                        duration = "",
+                        timeoutSeconds = 0,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("documentNameSuffix" to "NetwotkInterfaceLatencyAttack-1")
+                )
+        )
         assertThat(attack.documentName() == "NetwotkInterfaceLatencyAttack-1")
     }
+
     @Test
     fun `test when additional document name param does not exist`() {
-        val attack = getAttack(ssm,
-                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
-                        "",
-                        0,
-                        "",
-                        Collections.emptyList(),
-                        100,
-                        emptyMap<String, String>()))
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "NetworkInterfaceLatencyAttack",
+                        duration = "",
+                        timeoutSeconds = 0,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = emptyMap<String, String>()
+                )
+        )
         assertThat(attack.documentName() == "NetworkInterfaceLatencyAttack")
     }
 
     @Test
     fun `test when additional document name param is empty`() {
-        val attack = getAttack(ssm,
-                SSMAttack.Companion.AttackConfiguration("NetworkInterfaceLatencyAttack",
-                        "",
-                        0,
-                        "",
-                        Collections.emptyList(),
-                        100,
-                        mutableMapOf("documentNameSuffix" to "")))
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "NetworkInterfaceLatencyAttack",
+                        duration = "",
+                        timeoutSeconds = 0,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("documentNameSuffix" to "")
+                )
+        )
         assertThat(attack.documentName() == "NetworkInterfaceLatencyAttack")
     }
 }

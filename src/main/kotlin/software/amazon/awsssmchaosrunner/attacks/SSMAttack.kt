@@ -7,8 +7,8 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model.CancelCommandRequest
 import com.amazonaws.services.simplesystemsmanagement.model.CloudWatchOutputConfig
 import com.amazonaws.services.simplesystemsmanagement.model.Command
-import com.amazonaws.services.simplesystemsmanagement.model.CreateDocumentResult
 import com.amazonaws.services.simplesystemsmanagement.model.CreateDocumentRequest
+import com.amazonaws.services.simplesystemsmanagement.model.CreateDocumentResult
 import com.amazonaws.services.simplesystemsmanagement.model.DeleteDocumentRequest
 import com.amazonaws.services.simplesystemsmanagement.model.DocumentFormat
 import com.amazonaws.services.simplesystemsmanagement.model.DocumentType
@@ -36,13 +36,15 @@ interface SSMAttack {
         createCommandDocument(ssm, this.documentName(), this.documentContent)
 
         val request = SendCommandRequest()
-                .withDocumentName(this.documentName())
-                .withTargets(configuration.targets)
-                .withCloudWatchOutputConfig(CloudWatchOutputConfig()
-                        .withCloudWatchLogGroupName(configuration.cloudWatchLogGroupName)
-                        .withCloudWatchOutputEnabled(true))
-                .withMaxConcurrency("${configuration.concurrencyPercentage}%")
-                .withTimeoutSeconds(configuration.timeoutSeconds)
+            .withDocumentName(this.documentName())
+            .withTargets(configuration.targets)
+            .withCloudWatchOutputConfig(
+                CloudWatchOutputConfig()
+                    .withCloudWatchLogGroupName(configuration.cloudWatchLogGroupName)
+                    .withCloudWatchOutputEnabled(true)
+            )
+            .withMaxConcurrency("${configuration.concurrencyPercentage}%")
+            .withTimeoutSeconds(configuration.timeoutSeconds)
         val sendCommandResult = ssm.sendCommand(request)
         return sendCommandResult.command
     }
@@ -50,22 +52,20 @@ interface SSMAttack {
     fun stop(command: Command) {
         val cancelCommandRequest = CancelCommandRequest().withCommandId(command.commandId)
         ssm.cancelCommand(cancelCommandRequest)
-        val deleteDocumentRequest = DeleteDocumentRequest()
-                .withName(this.documentName())
+        val deleteDocumentRequest = DeleteDocumentRequest().withName(this.documentName())
         ssm.deleteDocument(deleteDocumentRequest)
     }
 
     companion object {
         private const val EC2TargetType = "/AWS::EC2::Instance"
 
-        fun createCommandDocument(ssm: AWSSimpleSystemsManagement, documentName: String?, documentContent: String):
-                CreateDocumentResult? {
+        fun createCommandDocument(ssm: AWSSimpleSystemsManagement, documentName: String?, documentContent: String): CreateDocumentResult? {
             val request = CreateDocumentRequest()
-                    .withDocumentFormat(DocumentFormat.YAML)
-                    .withContent(documentContent)
-                    .withDocumentType(DocumentType.Command)
-                    .withTargetType(EC2TargetType)
-                    .withName(documentName)
+                .withDocumentFormat(DocumentFormat.YAML)
+                .withContent(documentContent)
+                .withDocumentType(DocumentType.Command)
+                .withTargetType(EC2TargetType)
+                .withName(documentName)
             return ssm.createDocument(request)
         }
 
@@ -73,6 +73,8 @@ interface SSMAttack {
             "NetworkInterfaceLatencyAttack" -> NetworkInterfaceLatencyAttack(ssm, configuration)
             "DependencyLatencyAttack" -> DependencyLatencyAttack(ssm, configuration)
             "DependencyPacketLossAttack" -> DependencyPacketLossAttack(ssm, configuration)
+            "MultiIPAddressLatencyAttack" -> MultiIPAddressLatencyAttack(ssm, configuration)
+            "MultiIPAddressPacketLossAttack" -> MultiIPAddressPacketLossAttack(ssm, configuration)
             "MemoryHogAttack" -> MemoryHogAttack(ssm, configuration)
             "CPUHogAttack" -> CPUHogAttack(ssm, configuration)
             "DiskHogAttack" -> DiskHogAttack(ssm, configuration)
