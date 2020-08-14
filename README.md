@@ -3,16 +3,18 @@
 [![Javadoc](https://javadoc-badge.appspot.com/software.amazon.awsssmchaosrunner/awsssmchaosrunner.svg?label=javadoc)](http://www.javadoc.io/doc/software.amazon.awsssmchaosrunner/awsssmchaosrunner)
 
 ## AWSSSMChaosRunner
-AWSSSMChaosRunner is a library which simplifies failure injection testing for EC2. It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html) for failure injection.
+AWSSSMChaosRunner is a library which simplifies failure injection testing and chaos engineering for [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html), [ECS (with EC2 launch type)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-ecs-ec2.html) and [Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html) (only resource hog failure injections). 
+It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html) for failure injection.
 
 ![](./AWSSSMChaosRunner.png)
 
-### Usage
+### Usage for EC2
 1. **Setup permissions for calling SSM from tests package**
 
     This can be done in many different ways. The approach described here generates temporary credentials for AWS SSM on each run of the tests. To enable this the following are needed
     
-    * An IAM role with the following permissions.  
+    * An IAM role with the following permissions.
+        (JSON snippet)  
         ```json
         {
             "Version": "2012-10-17",
@@ -76,6 +78,7 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
     ```
 
 1. **Initialise the SSM Client**
+    (Kotlin snippet)
     ```kotlin
     @Bean
     open fun awsSecurityTokenService(
@@ -106,6 +109,7 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
     ```
  
 1. **Start the fault injection attack before starting the test and stop it after the test**
+    (Kotlin snippet)
     ```kotlin
     import software.amazon.awsssmchaosrunner.attacks.SSMAttack
     import software.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
@@ -169,3 +173,58 @@ AWSSSMChaosRunner is a library which simplifies failure injection testing for EC
 * **What languages does AWSSSMChaosRunner support ?**
 
     AWSSSMChaosRunner can be used as a dependency from Kotlin, Java or Scala.
+    
+* **Can AWSSSMChaosRunner be used for [Amazon Elastic Container Service (ECS)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) ?**
+
+    Yes. The above EC2 usage steps should be followed after the **SSM agent setups** listed below.
+    
+    * ECS + EC2 launch type
+       * SSM Agent setup 
+         
+         The SSM Agent is required for using SSM SendCommand API and thus, for using AWSSSMChaosRunner. The base EC2 images include the
+         SSM Agent, but the base ECS images do not. It can be installed directly at the host level. This can be achieved with the following
+          CloudFormation snippet (YAML):
+           ```yaml
+               # Adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.html
+                 LaunchConfiguration0:
+                   Type: AWS::AutoScaling::LaunchConfiguration
+                   Metadata:
+                     # This is processed by cfn-init in the Properties.UserData script below. It installs a
+                     # service that monitors for changes in the Metadata just below, causing a configuration
+                     # update.
+                     #
+                     # CloudFormation updates to the LaunchConfiguration's Properties won't take effect on
+                     # existing instances. Consequently, any CloudFormation field that could change should go in
+                     # the Metadata.
+                     AWS::CloudFormation::Init:
+                       config:
+                         # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html
+                         packages:
+                           rpm:
+                             # The SSM (Systems Systems Manager) agent is necessary to use `aws ssm send-command`
+                             # or 'Run Command' in the AWS-EC2 console. It's also required by InfoSec for our
+                             # exception. The base EC2 images include it, but the base ECS images do not.
+                             # https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-install-startup-linux.html
+                             amazon-ssm-agent: !Sub https://s3.${AWS::Region}.amazonaws.com/amazon-ssm-${AWS::Region}/latest/linux_amd64/amazon-ssm-agent.rpm
+           ```
+       * Possible failure injections
+           
+           SSM SendCommand API will run the underlying failure injection commands directly on the EC2 host. This will affect all tasks
+            running on these hosts. The EC2 + ECS host does not impose any additional restrictions regarding what resources can or can't
+             be accessed. Thus, all AWSSSMChaosRunner attacks can be run on EC2 + ECS.
+    
+    * Fargate
+      * SSM Agent setup 
+      
+          This is complicated but possible. Please search github, there are a few unofficial posts detailing how to achieve this.
+        
+      * Possible failure injections
+          
+          Resource hog attacks have been run successfully i.e. MemoryHog, CPUHog and DiskHog.
+          
+          Network interface related attacks can not be run because allowing containers to gain NET_ADMIN capability on the underlying EC2
+           host is not permitted for Fargate.
+            
+* **Can AWSSSMChaosRunner be used for [AWS Lambda](https://aws.amazon.com/lambda/) ?**
+    
+    No.
