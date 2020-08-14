@@ -79,7 +79,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
 
 1. **Initialise the SSM Client**
     (Kotlin snippet)
-    ```kotlin
+    ```kt
     @Bean
     open fun awsSecurityTokenService(
        credentialsProvider: AWSCredentialsProvider, 
@@ -110,7 +110,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
  
 1. **Start the fault injection attack before starting the test and stop it after the test**
     (Kotlin snippet)
-    ```kotlin
+    ```kt
     import software.amazon.awsssmchaosrunner.attacks.SSMAttack
     import software.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
     ...
@@ -185,27 +185,27 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
          SSM Agent, but the base ECS images do not. It can be installed directly at the host level. This can be achieved with the following
           CloudFormation snippet (YAML):
            ```yaml
-               # Adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.html
-                 LaunchConfiguration0:
-                   Type: AWS::AutoScaling::LaunchConfiguration
-                   Metadata:
-                     # This is processed by cfn-init in the Properties.UserData script below. It installs a
-                     # service that monitors for changes in the Metadata just below, causing a configuration
-                     # update.
-                     #
-                     # CloudFormation updates to the LaunchConfiguration's Properties won't take effect on
-                     # existing instances. Consequently, any CloudFormation field that could change should go in
-                     # the Metadata.
-                     AWS::CloudFormation::Init:
-                       config:
-                         # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html
-                         packages:
-                           rpm:
-                             # The SSM (Systems Systems Manager) agent is necessary to use `aws ssm send-command`
-                             # or 'Run Command' in the AWS-EC2 console. It's also required by InfoSec for our
-                             # exception. The base EC2 images include it, but the base ECS images do not.
-                             # https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-install-startup-linux.html
-                             amazon-ssm-agent: !Sub https://s3.${AWS::Region}.amazonaws.com/amazon-ssm-${AWS::Region}/latest/linux_amd64/amazon-ssm-agent.rpm
+           # Adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.html
+             LaunchConfiguration0:
+               Type: AWS::AutoScaling::LaunchConfiguration
+               Metadata:
+                 # This is processed by cfn-init in the Properties.UserData script below. It installs a
+                 # service that monitors for changes in the Metadata just below, causing a configuration
+                 # update.
+                 #
+                 # CloudFormation updates to the LaunchConfiguration's Properties won't take effect on
+                 # existing instances. Consequently, any CloudFormation field that could change should go in
+                 # the Metadata.
+                 AWS::CloudFormation::Init:
+                   config:
+                     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html
+                     packages:
+                       rpm:
+                         # The SSM (Systems Systems Manager) agent is necessary to use `aws ssm send-command`
+                         # or 'Run Command' in the AWS-EC2 console. It's also required by InfoSec for our
+                         # exception. The base EC2 images include it, but the base ECS images do not.
+                         # https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-install-startup-linux.html
+                         amazon-ssm-agent: !Sub https://s3.${AWS::Region}.amazonaws.com/amazon-ssm-${AWS::Region}/latest/linux_amd64/amazon-ssm-agent.rpm
            ```
        * Possible failure injections
            
