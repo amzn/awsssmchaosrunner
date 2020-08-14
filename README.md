@@ -184,7 +184,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
          The SSM Agent is required for using SSM SendCommand API and thus, for using AWSSSMChaosRunner. The base EC2 images include the
          SSM Agent, but the base ECS images do not. It can be installed directly at the host level. This can be achieved with the following
           CloudFormation snippet (YAML):
-           ```yaml
+           ```yml
            # Adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.html
              LaunchConfiguration0:
                Type: AWS::AutoScaling::LaunchConfiguration
