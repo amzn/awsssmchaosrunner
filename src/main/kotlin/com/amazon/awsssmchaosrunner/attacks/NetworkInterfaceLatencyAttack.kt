@@ -23,9 +23,9 @@ class NetworkInterfaceLatencyAttack constructor(
                 "  inputs:\n" +
                 "    runCommand:\n"
             val chaos = "    - sudo tc qdisc add dev eth0 root netem delay " +
-                "${configuration.otherParameters["networkInterfaceLatencyMs"]}ms && tc qdisc show\n"
+                "${getNetworkInterfaceLatency()} && tc qdisc show\n"
             val scheduledChaosRollback = "    - echo \"sudo tc qdisc del dev eth0 root netem delay " +
-                "${configuration.otherParameters["networkInterfaceLatencyMs"]}ms && tc qdisc show\" | " +
+                "${getNetworkInterfaceLatency()} && tc qdisc show\" | " +
                 "at now + ${Duration.parse(configuration.duration).toMinutes()} minutes\n"
             val documentContent = "$documentHeader$scheduledChaosRollback$chaos"
             log.info("Chaos Document Content:\n$documentContent")

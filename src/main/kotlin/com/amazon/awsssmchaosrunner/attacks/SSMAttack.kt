@@ -17,6 +17,13 @@ interface SSMAttack {
     val configuration: AttackConfiguration
     val documentContent: String
 
+    val timeUnitInMicroseconds: String
+        get() = "us"
+    val timeUnitInMilliseconds: String
+        get() = "ms"
+    val defaultJitterValue: String
+        get() = "10"
+
     /**
      * SSM createDocument() needs unique document names for creation. Delete the existing SSM document from the SSM AWS UI.
      *
@@ -51,6 +58,22 @@ interface SSMAttack {
         ssm.cancelCommand(cancelCommandRequest)
         val deleteDocumentRequest = DeleteDocumentRequest().withName(this.documentName())
         ssm.deleteDocument(deleteDocumentRequest)
+    }
+
+    fun getNetworkInterfaceLatency(): String {
+        return if (configuration.otherParameters.containsKey("networkInterfaceLatencyUs"))
+            configuration.otherParameters.get("networkInterfaceLatencyUs") + timeUnitInMicroseconds
+        else configuration.otherParameters.get("networkInterfaceLatencyMs") + timeUnitInMilliseconds
+    }
+
+    fun getJitter(): String {
+        return configuration.otherParameters.getOrDefault("networkInterfaceLatencyJitter", getDefaultJitter())
+    }
+
+    fun getDefaultJitter(): String {
+        return if (configuration.otherParameters.containsKey("networkInterfaceLatencyUs"))
+            defaultJitterValue + timeUnitInMicroseconds
+        else defaultJitterValue + timeUnitInMilliseconds
     }
 
     companion object {

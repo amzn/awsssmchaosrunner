@@ -5,6 +5,7 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -103,5 +104,91 @@ class SSMAttackTest {
             )
         )
         assertThat(attack.documentName() == "NetworkInterfaceLatencyAttack")
+    }
+
+    @Test
+    fun `when getAttack called with networkInterfaceLatency in milliseconds with jitter`() {
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "DependencyLatencyAttack",
+                        duration = "PT10M",
+                        timeoutSeconds = 120,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("dependencyEndpoint" to "test-endpoint",
+                                "networkInterfaceLatencyMs" to "5", "networkInterfaceLatencyJitter" to "1ms",
+                                "dependencyPort" to "1234")
+                )
+        )
+        Assertions.assertTrue(attack.documentContent.contains("test-endpoint"))
+        Assertions.assertTrue(attack.documentContent.contains("5ms"))
+        Assertions.assertTrue(attack.documentContent.contains("1ms"))
+        Assertions.assertTrue(attack.documentContent.contains("1234"))
+    }
+
+    @Test
+    fun `when getAttack called with networkInterfaceLatency in milliseconds without jitter`() {
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "DependencyLatencyAttack",
+                        duration = "PT10M",
+                        timeoutSeconds = 120,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("dependencyEndpoint" to "test-endpoint",
+                                "networkInterfaceLatencyMs" to "5", "dependencyPort" to "1234")
+                )
+        )
+        Assertions.assertTrue(attack.documentContent.contains("test-endpoint"))
+        Assertions.assertTrue(attack.documentContent.contains("5ms"))
+        Assertions.assertTrue(attack.documentContent.contains("10ms"))
+        Assertions.assertTrue(attack.documentContent.contains("1234"))
+    }
+
+    @Test
+    fun `when getAttack called with networkInterfaceLatency in microseconds with jitter`() {
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "DependencyLatencyAttack",
+                        duration = "PT10M",
+                        timeoutSeconds = 120,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("dependencyEndpoint" to "test-endpoint",
+                                "networkInterfaceLatencyUs" to "5", "networkInterfaceLatencyJitter" to "1us",
+                                "dependencyPort" to "1234")
+                )
+        )
+        Assertions.assertTrue(attack.documentContent.contains("test-endpoint"))
+        Assertions.assertTrue(attack.documentContent.contains("5us"))
+        Assertions.assertTrue(attack.documentContent.contains("1us"))
+        Assertions.assertTrue(attack.documentContent.contains("1234"))
+    }
+
+    @Test
+    fun `when getAttack called with networkInterfaceLatency in microseconds without jitter`() {
+        val attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                        name = "DependencyLatencyAttack",
+                        duration = "PT10M",
+                        timeoutSeconds = 120,
+                        cloudWatchLogGroupName = "",
+                        targets = Collections.emptyList(),
+                        concurrencyPercentage = 100,
+                        otherParameters = mutableMapOf("dependencyEndpoint" to "test-endpoint",
+                                "networkInterfaceLatencyUs" to "5", "dependencyPort" to "1234")
+                )
+        )
+        Assertions.assertTrue(attack.documentContent.contains("test-endpoint"))
+        Assertions.assertTrue(attack.documentContent.contains("5us"))
+        Assertions.assertTrue(attack.documentContent.contains("10us"))
+        Assertions.assertTrue(attack.documentContent.contains("1234"))
     }
 }
