@@ -8,7 +8,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
 
 ![](./AWSSSMChaosRunner.png)
 
-An in-depth introduction to this library and how Prime Video uses it can be found here - https://aws.amazon.com/blogs/opensource/building-resilient-services-at-prime-video-with-chaos-engineering/   
+**An in-depth introduction to this library and how Prime Video uses it can be found here** - https://aws.amazon.com/blogs/opensource/building-resilient-services-at-prime-video-with-chaos-engineering/   
 
 ### Usage for EC2
 1. **Setup permissions for calling SSM from tests package**
