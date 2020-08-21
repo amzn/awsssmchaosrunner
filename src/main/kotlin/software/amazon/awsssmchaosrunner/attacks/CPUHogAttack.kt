@@ -24,7 +24,10 @@ class CPUHogAttack constructor(
                 "  name: ${this.documentName()}\n" +
                 "  inputs:\n" +
                 "    runCommand:\n"
-            val chaos = "    - sudo yum -y install stress-ng\n" +
+            // stress-ng package is available through amazon-linux-extras in Amazon Linux 2
+            // first shell command is set to retun true always, as amazon-linux-extras is only available for AL2
+            val chaos = "    - sudo amazon-linux-extras install testing || true\n" +
+                "    - sudo yum -y install stress-ng\n" +
                 "    - stress-ng --cpu $cpuStressors --cpu-load ${configuration.otherParameters["cpuLoadPercent"]}% " +
                 "--cpu-method matrixprod -t ${Duration.parse(configuration.duration).seconds}s\n"
             val scheduledChaosRollback = "    - echo \"sudo yum -y remove stress-ng\" | " +
