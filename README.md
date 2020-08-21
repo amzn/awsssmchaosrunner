@@ -75,7 +75,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
     <dependency>
       <groupId>software.amazon.awsssmchaosrunner</groupId>
       <artifactId>awsssmchaosrunner</artifactId>
-      <version>1.2.0</version>
+      <version>1.3.0</version>
     </dependency> 
     ```
 
