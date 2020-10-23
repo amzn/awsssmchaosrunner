@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "software.amazon.awsssmchaosrunner"
-version = "1.3.0"
+version = "1.4.0"
 
 sourceSets {
     test {
@@ -32,10 +32,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.amazonaws:aws-java-sdk-ssm:[1.11,)'
-    implementation 'io.github.microutils:kotlin-logging:[1.6,)'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:[1.3,)'
-    implementation 'org.slf4j:slf4j-api:[1.7,)'
+    implementation 'com.amazonaws:aws-java-sdk-ssm:1.+'
+    implementation 'io.github.microutils:kotlin-logging:1.+'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.+'
+    implementation 'org.slf4j:slf4j-api:1.+'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:[5.6,)'
     testImplementation 'io.mockk:mockk:[1.9,)'
@@ -43,6 +43,7 @@ dependencies {
     testImplementation 'org.slf4j:slf4j-log4j12:[1.8,)'
     testImplementation 'org.apache.logging.log4j:log4j-core:[2.11,)'
     testImplementation 'org.apache.logging.log4j:log4j-api:[2.11,)'
+    testImplementation 'com.amazonaws:aws-java-sdk-sts:1.+'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:[5.6,)'
 }

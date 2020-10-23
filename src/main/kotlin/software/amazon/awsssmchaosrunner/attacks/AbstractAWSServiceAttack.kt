@@ -4,6 +4,7 @@
 package software.amazon.awsssmchaosrunner.attacks
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
+import mu.KotlinLogging
 import java.time.Duration
 
 /**
@@ -25,6 +26,7 @@ abstract class AbstractAWSServiceAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
+    private val log = KotlinLogging.logger { }
     abstract val chaosContent: String
 
     override val documentContent: String
@@ -34,7 +36,9 @@ abstract class AbstractAWSServiceAttack constructor(
             val scheduledChaosRollback2 = "    - \"echo \'sudo tc qdisc del dev eth0 parent 1:1 handle 10:\'$rollbackTime"
             val scheduledChaosRollback3 = "    - \"echo \'sudo tc qdisc del dev eth0 root handle 1: prio\'$rollbackTime"
             val scheduledChaosRollback = "$scheduledChaosRollback1\n$scheduledChaosRollback2\n$scheduledChaosRollback3\n"
-            return "$documentHeader$scheduledChaosRollback$chaosContent"
+            val documentContent = "$documentHeader$scheduledChaosRollback$chaosContent"
+            log.info("Chaos Document Content:\n$documentContent")
+            return documentContent
         }
 
     val serviceCidrRangeQuery: String
