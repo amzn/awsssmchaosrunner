@@ -175,6 +175,21 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
 * **What languages does AWSSSMChaosRunner support ?**
 
     AWSSSMChaosRunner can be used as a dependency from Kotlin, Java or Scala.
+
+* **Is there a complete working demo of using this library ?**
+
+    A demonstration can be found in [Demo.kt](./src/test/kotlin/software/amazon/awsssmchaosrunner/attacks/Demo.kt).
+    To run the demo:
+    
+    * Clone this project.
+    
+    * Build the gradle project successfully (via gradle CLI or IDE).
+    
+    * Modify the `awsProfile` value to the awsProfile name for your AWS account.
+    
+    * Comment `@Disabled()` annotation.
+    
+    * Run the gradle test target. 
     
 * **Can AWSSSMChaosRunner be used for [Amazon Elastic Container Service (ECS)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) ?**
 
