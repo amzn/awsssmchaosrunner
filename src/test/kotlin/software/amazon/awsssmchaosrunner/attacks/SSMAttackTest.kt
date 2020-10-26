@@ -1,6 +1,5 @@
-package com.amazon.awsssmchaosrunner.attacks
+package software.amazon.awsssmchaosrunner.attacks
 
-import com.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import software.amazon.awsssmchaosrunner.attacks.SSMAttack.Companion.getAttack
 import java.util.Collections
 
 class SSMAttackTest {

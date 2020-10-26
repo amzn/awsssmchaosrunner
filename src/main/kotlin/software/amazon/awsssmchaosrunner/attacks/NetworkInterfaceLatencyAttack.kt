@@ -1,4 +1,4 @@
-package com.amazon.awsssmchaosrunner.attacks
+package software.amazon.awsssmchaosrunner.attacks
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import mu.KotlinLogging

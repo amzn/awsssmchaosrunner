@@ -1,4 +1,4 @@
-package com.amazon.awsssmchaosrunner.attacks
+package software.amazon.awsssmchaosrunner.attacks
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model.CancelCommandRequest
@@ -37,7 +37,7 @@ interface SSMAttack {
     }
 
     fun start(): Command {
-        createCommandDocument(ssm, this.documentName(), this.documentContent)
+        createCommandDocument()
 
         val request = SendCommandRequest()
             .withDocumentName(this.documentName())
@@ -76,18 +76,18 @@ interface SSMAttack {
         else defaultJitterValue + timeUnitInMilliseconds
     }
 
-    companion object {
-        private const val EC2TargetType = "/AWS::EC2::Instance"
-
-        fun createCommandDocument(ssm: AWSSimpleSystemsManagement, documentName: String?, documentContent: String): CreateDocumentResult? {
-            val request = CreateDocumentRequest()
+    fun createCommandDocument(): CreateDocumentResult? {
+        val request = CreateDocumentRequest()
                 .withDocumentFormat(DocumentFormat.YAML)
                 .withContent(documentContent)
                 .withDocumentType(DocumentType.Command)
                 .withTargetType(EC2TargetType)
-                .withName(documentName)
-            return ssm.createDocument(request)
-        }
+                .withName(this.documentName())
+        return ssm.createDocument(request)
+    }
+
+    companion object {
+        private const val EC2TargetType = "/AWS::EC2::Instance"
 
         fun getAttack(ssm: AWSSimpleSystemsManagement, configuration: AttackConfiguration): SSMAttack = when (configuration.name) {
             "NetworkInterfaceLatencyAttack" -> NetworkInterfaceLatencyAttack(ssm, configuration)
