@@ -3,7 +3,7 @@
 [![Javadoc](https://javadoc-badge.appspot.com/software.amazon.awsssmchaosrunner/awsssmchaosrunner.svg?label=javadoc)](http://www.javadoc.io/doc/software.amazon.awsssmchaosrunner/awsssmchaosrunner)
 
 ## AWSSSMChaosRunner
-AWSSSMChaosRunner is a library which simplifies failure injection testing and chaos engineering for [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html), [ECS (with EC2 launch type)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-ecs-ec2.html) and [Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html) (only resource hog failure injections). 
+AWSSSMChaosRunner is a library which simplifies failure injection testing and chaos engineering for [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) and [ECS (with EC2 launch type)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-ecs-ec2.html). 
 It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html) for failure injection.
 
 ![](./AWSSSMChaosRunner.png)
@@ -229,18 +229,6 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
            SSM SendCommand API will run the underlying failure injection commands directly on the EC2 host. This will affect all tasks
             running on these hosts. The EC2 + ECS host does not impose any additional restrictions regarding what resources can or can't
              be accessed. Thus, all AWSSSMChaosRunner attacks can be run on EC2 + ECS.
-    
-    * Fargate
-      * SSM Agent setup 
-      
-          This is complicated but possible. Please search github, there are a few unofficial posts detailing how to achieve this.
-        
-      * Possible failure injections
-          
-          Resource hog attacks have been run successfully i.e. MemoryHog, CPUHog and DiskHog.
-          
-          Network interface related attacks can not be run because allowing containers to gain NET_ADMIN capability on the underlying EC2
-           host is not permitted for Fargate.
             
 * **Can AWSSSMChaosRunner be used for [AWS Lambda](https://aws.amazon.com/lambda/) ?**
     
