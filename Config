@@ -4,7 +4,7 @@ package.AWSSSMChaosRunner = {
     build-system = brazil-gradle;
     build-tools = {
         1.0 = {
-            OpenJDK8 = 1.1;
+            JavaBuildAndTestMin = jdk8;
             BrazilGradle = 4.x;
             DVPrefsAndSettingsGradleConfiguration = 1.0;
             BrazilBootstrapAntTask = 1.0;
@@ -28,7 +28,7 @@ package.AWSSSMChaosRunner = {
             # and remove 'useJUnitPlatform' from build.gradle. For mixed
             # JUnit 4 and 5 tests, keep this and add 'JUnit-4-12-migration = 5.x;'
             JUnit5 = 5.x;
-            OpenJDK8 = 1.1;
+            JavaBuildAndTestMin = jdk8;
             AssertJ = 3.15;
             MockK = 1.9.x;
         };
