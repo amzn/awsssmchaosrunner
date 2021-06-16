@@ -10,8 +10,10 @@ class DiskHogAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
-
     private val diskStressors = 0 // Stress all available cores
+
+    override val requiredOtherParameters = arrayOf("diskPercent")
+
     override val documentContent: String
         get() {
             val documentHeader = "---\n" +

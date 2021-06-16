@@ -191,4 +191,77 @@ class SSMAttackTest {
         Assertions.assertTrue(attack.documentContent.contains("10us"))
         Assertions.assertTrue(attack.documentContent.contains("1234"))
     }
+
+    @Test
+    fun `when start called without requiredOtherParams then throws`() {
+        assertThrows(RuntimeException::class.java) {
+            getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                    name = "MultiIPAddressLatencyAttack",
+                    duration = "PT10M",
+                    timeoutSeconds = 120,
+                    cloudWatchLogGroupName = "",
+                    targets = Collections.emptyList(),
+                    concurrencyPercentage = 100,
+                    otherParameters = mutableMapOf("networkInterfaceLatencyUs" to "5", "dependencyPort" to "1234")
+                )
+            ).start()
+        }
+    }
+
+    @Test
+    fun `when start called with empty requiredOtherParams then throws`() {
+        assertThrows(RuntimeException::class.java) {
+            getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                    name = "DiskHogAttack",
+                    duration = "PT10M",
+                    timeoutSeconds = 120,
+                    cloudWatchLogGroupName = "",
+                    targets = Collections.emptyList(),
+                    concurrencyPercentage = 100,
+                    otherParameters = Collections.emptyMap()
+                )
+            ).start()
+        }
+    }
+
+    @Test
+    fun `when start called with networkInterfaceLatencyUs or networkInterfaceLatencyMs then succeeds`() {
+            var attack = getAttack(
+                ssm,
+                SSMAttack.Companion.AttackConfiguration(
+                    name = "AWSServiceLatencyAttack",
+                    duration = "PT10M",
+                    timeoutSeconds = 120,
+                    cloudWatchLogGroupName = "",
+                    targets = Collections.emptyList(),
+                    concurrencyPercentage = 100,
+                    otherParameters = mutableMapOf("region" to "us-east-1",
+                        "service" to "DYNAMODB",
+                        "networkInterfaceLatencyUs" to "5",
+                        "dependencyPort" to "1234")
+                )
+            )
+        attack.start()
+
+        attack = getAttack(
+            ssm,
+            SSMAttack.Companion.AttackConfiguration(
+                name = "AWSServiceLatencyAttack",
+                duration = "PT10M",
+                timeoutSeconds = 120,
+                cloudWatchLogGroupName = "",
+                targets = Collections.emptyList(),
+                concurrencyPercentage = 100,
+                otherParameters = mutableMapOf("region" to "us-east-1",
+                    "service" to "DYNAMODB",
+                    "networkInterfaceLatencyMs" to "5",
+                    "dependencyPort" to "1234")
+            )
+        )
+        attack.start()
+    }
 }

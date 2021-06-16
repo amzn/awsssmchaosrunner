@@ -11,6 +11,9 @@ class MemoryHogAttack constructor(
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
     private val vmWorkers = 8
+
+    override val requiredOtherParameters = arrayOf("virtualMemoryPercent")
+
     override val documentContent: String
         get() {
             val documentHeader = "---\n" +

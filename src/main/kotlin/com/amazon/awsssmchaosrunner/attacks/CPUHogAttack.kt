@@ -11,6 +11,9 @@ class CPUHogAttack constructor(
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
     private val cpuStressors = 0 // Stress all available cores
+
+    override val requiredOtherParameters = arrayOf("cpuLoadPercent")
+
     override val documentContent: String
         get() {
             val documentHeader = "---\n" +

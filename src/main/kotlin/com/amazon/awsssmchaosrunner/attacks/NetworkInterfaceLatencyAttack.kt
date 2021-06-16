@@ -10,6 +10,8 @@ class NetworkInterfaceLatencyAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
+    override val requiredOtherParameters = arrayOf("networkInterfaceLatencyMs")
+
     override val documentContent: String
         // From https://github.com/adhorn/chaos-ssm-documents/blob/master/latency-stress.yml
         get() {

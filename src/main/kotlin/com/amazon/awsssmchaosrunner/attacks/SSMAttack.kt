@@ -16,6 +16,8 @@ interface SSMAttack {
     val ssm: AWSSimpleSystemsManagement
     val configuration: AttackConfiguration
     val documentContent: String
+    val requiredOtherParameters: Array<String>
+        get() = emptyArray()
 
     val timeUnitInMicroseconds: String
         get() = "us"
@@ -37,6 +39,7 @@ interface SSMAttack {
     }
 
     fun start(): Command {
+        validateOtherParameters()
         createCommandDocument(ssm, this.documentName(), this.documentContent)
 
         val request = SendCommandRequest()
@@ -74,6 +77,17 @@ interface SSMAttack {
         return if (configuration.otherParameters.containsKey("networkInterfaceLatencyUs"))
             defaultJitterValue + timeUnitInMicroseconds
         else defaultJitterValue + timeUnitInMilliseconds
+    }
+
+    fun validateOtherParameters() {
+        val anyMissingParams = requiredOtherParameters.map {
+            if (it == "networkInterfaceLatencyMs") configuration.otherParameters.containsKey("networkInterfaceLatencyMs") || configuration.otherParameters.containsKey("networkInterfaceLatencyUs")
+            else configuration.otherParameters.containsKey(it)
+        }.any { it == false }
+
+        if (anyMissingParams) {
+            throw RuntimeException("${configuration.name} required parameters: ${requiredOtherParameters.map { it }}")
+        }
     }
 
     companion object {
