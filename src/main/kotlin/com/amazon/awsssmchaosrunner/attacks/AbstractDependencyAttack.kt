@@ -33,7 +33,8 @@ abstract class AbstractDependencyAttack constructor(
                     "- action: aws:runShellScript\n" +
                     "  name: ${this.documentName()}\n" +
                     "  inputs:\n" +
-                    "    runCommand:\n"
+                    "    runCommand:\n" +
+                    "    - sudo yum -y install tc || true\n"
         }
 
     private val scheduledChaosRollback: String
