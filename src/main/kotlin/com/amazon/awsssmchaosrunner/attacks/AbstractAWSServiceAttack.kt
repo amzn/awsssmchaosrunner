@@ -53,6 +53,8 @@ abstract class AbstractAWSServiceAttack constructor(
                 "  name: ${documentName()}\n" +
                 "  inputs:\n" +
                 "    runCommand:\n" +
-                "    - sudo yum -y install tc || true\n"
+                "    - sudo yum -y install tc || true\n" +
+                "    - sudo yum -y install at\n" +
+                "    - sudo systemctl start atd\n"
         }
 }

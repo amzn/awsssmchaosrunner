@@ -23,7 +23,9 @@ class CPUHogAttack constructor(
                 "- action: aws:runShellScript\n" +
                 "  name: ${this.documentName()}\n" +
                 "  inputs:\n" +
-                "    runCommand:\n"
+                "    runCommand:\n" +
+                "    - sudo yum -y install at\n" +
+                "    - sudo systemctl start atd\n"
             // stress-ng package is available through amazon-linux-extras in Amazon Linux 2
             // first shell command is set to retun true always, as amazon-linux-extras is only available for AL2
             val chaos = "    - sudo amazon-linux-extras install testing || true\n" +
