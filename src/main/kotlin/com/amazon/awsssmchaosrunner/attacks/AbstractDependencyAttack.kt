@@ -34,8 +34,7 @@ abstract class AbstractDependencyAttack constructor(
                     "  name: ${this.documentName()}\n" +
                     "  inputs:\n" +
                     "    runCommand:\n" +
-                    "    - sudo yum -y install tc || true\n" +
-                    "    - sudo yum -y install at\n" +
+                    "    - sudo yum -y install tc at || true\n" +
                     "    - sudo systemctl start atd\n"
         }
 

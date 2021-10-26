@@ -24,9 +24,8 @@ class NetworkInterfaceLatencyAttack constructor(
                 "  name: ${this.documentName()}\n" +
                 "  inputs:\n" +
                 "    runCommand:\n" +
-                "    - sudo yum -y install tc || true\n" +
-                "    - sudo yum -y install at\n" +
-                "    - sudo systemctl start atd\n"
+                "    - sudo yum -y install tc at || true\n" +
+                "    - sudo systemctl start atd || true\n"
             val chaos = "    - sudo tc qdisc add dev eth0 root netem delay " +
                 "${getNetworkInterfaceLatency()} && tc qdisc show\n"
             val scheduledChaosRollback = "    - echo \"sudo tc qdisc del dev eth0 root netem delay " +
