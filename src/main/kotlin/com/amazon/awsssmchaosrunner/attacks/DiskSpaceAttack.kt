@@ -12,7 +12,7 @@ class DiskSpaceAttack constructor(
 ) : SSMAttack {
     override val requiredOtherParameters = arrayOf("diskPercent")
 
-    private val directoryToOverload = configuration.otherParameters.getOrDefault("directory", "/")
+    private val directoryToOverload = configuration.otherParameters.getOrDefault("directory", "/tmp")
     private val diskPercentage = configuration.otherParameters.getOrDefault("diskPercent", "50")
 
     override val documentContent: String
@@ -26,8 +26,6 @@ class DiskSpaceAttack constructor(
                 "  inputs:\n" +
                 "    workingDirectory: $directoryToOverload\n" +
                 "    runCommand:\n"
-            // stress-ng package is available through amazon-linux-extras in Amazon Linux 2
-            // first shell command is set to retun true always, as amazon-linux-extras is only available for AL2
             val chaos = "    - df -P . | tail -1 | awk '{print \"((\"\$2\"*$diskPercentage)/100)-\"\$3 }' | bc | sed 's/\\..*//' | xargs -I{} sudo fallocate -l {}K disk_hog_file.tmp\n"
             val scheduledChaosRollback = "    - echo \"sudo rm disk_hog_file.tmp\" | " +
                 "at now + ${Duration.parse(configuration.duration).toMinutes() + 1} minutes\n"
