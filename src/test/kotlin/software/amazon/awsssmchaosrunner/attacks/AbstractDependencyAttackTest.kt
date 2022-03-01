@@ -29,7 +29,8 @@ class AbstractDependencyAttackTest {
                         cloudWatchLogGroupName = "",
                         targets = Collections.emptyList(),
                         concurrencyPercentage = 100,
-                        otherParameters = Collections.emptyMap()
+                        otherParameters = mutableMapOf("dependencyIpAddresses" to "1.2.3.4 4.5.6.7",
+                            "networkInterfaceLatencyMs" to "5", "dependencyPort" to "1234")
                 )
         )
     }

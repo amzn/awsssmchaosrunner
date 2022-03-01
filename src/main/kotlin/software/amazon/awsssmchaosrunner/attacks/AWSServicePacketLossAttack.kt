@@ -12,6 +12,8 @@ class AWSServicePacketLossAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : AbstractAWSServiceAttack(ssm, configuration) {
+    override val requiredOtherParameters = arrayOf("region", "service", "dependencyPort", "packetLossPercentage")
+
     override val chaosContent: String
         get() {
             return "    - \"sudo tc qdisc add dev eth0 root handle 1: prio priomap 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2\"\n" +

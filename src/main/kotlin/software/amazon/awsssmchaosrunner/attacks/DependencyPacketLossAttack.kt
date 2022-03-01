@@ -11,8 +11,9 @@ class DependencyPacketLossAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : AbstractDependencyAttack(ssm, configuration) {
-    override val chaosContent: String
+    override val requiredOtherParameters = arrayOf("dependencyEndpoint", "dependencyPort", "packetLossPercentage")
 
+    override val chaosContent: String
         get() {
             return "    - \"sudo tc qdisc add dev eth0 root handle 1: prio priomap 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2\"\n" +
                     "    - \"sudo tc qdisc add dev eth0 parent 1:1 handle 10: netem loss ${configuration.otherParameters["packetLossPercentage"]}%\"\n" +

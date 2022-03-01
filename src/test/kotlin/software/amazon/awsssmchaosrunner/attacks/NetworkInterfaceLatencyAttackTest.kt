@@ -28,7 +28,7 @@ class NetworkInterfaceLatencyAttackTest {
                 cloudWatchLogGroupName = "",
                 targets = Collections.emptyList(),
                 concurrencyPercentage = 100,
-                otherParameters = Collections.emptyMap()
+                otherParameters = mutableMapOf("networkInterfaceLatencyMs" to "0")
             )
         )
     }

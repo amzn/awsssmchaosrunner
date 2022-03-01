@@ -13,11 +13,11 @@ package.AWSSSMChaosRunner = {
 
     dependencies = {
         1.0 = {
-            AWSSimpleSystemsManagementJavaClient = 1.11.x;
-            AWSJavaClientRuntime = 1.11.x;
-            AWSJavaClientCore = 1.11.x;
+            AWSSimpleSystemsManagementJavaClient = 1.12.x;
+            AWSJavaClientRuntime = 1.12.x;
+            AWSJavaClientCore = 1.12.x;
             KotlinReflect = 1.3.x;
-            Maven-io-github-microutils_kotlin-logging = 1.x;
+            Maven-io-github-microutils_kotlin-logging = 1.7.x;
             Slf4j = 1.7;
         };
     };
@@ -28,27 +28,25 @@ package.AWSSSMChaosRunner = {
             # and remove 'useJUnitPlatform' from build.gradle. For mixed
             # JUnit 4 and 5 tests, keep this and add 'JUnit-4-12-migration = 5.x;'
             JUnit5 = 5.x;
-            OpenJDK8 = 1.1;
-            AssertJ = 3.15;
-            MockK = 1.9.x;
+            AssertJ = 3.17.x;
+            MockK = 1.x;
         };
     };
 
     resolves-conflict-dependencies = {
         1.0 = {
-            Byte-buddy = 1.9.x;
-            Byte-buddy-agent = 1.9.x;
-            Jackson-annotations = 2.8.x;
-            Jackson-core = 2.8.x;
-            Jackson-databind = 2.8.x;
+            Jackson-annotations = 2.12.x;
+            Jackson-core = 2.12.x;
+            Jackson-databind = 2.12.x;
             KotlinStdlib = 1.3.x;
             KotlinStdlibCommon = 1.3.x;
+            KotlinReflect = 1.3.x;
         };
     };
 
     runtime-dependencies = {
         1.0 = {
-            log4j = 2.12;
+            log4j = 2.14.1;
         };
     };
 

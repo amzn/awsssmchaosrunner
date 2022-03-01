@@ -10,6 +10,8 @@ class NetworkInterfaceLatencyAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
+    override val requiredOtherParameters = arrayOf("networkInterfaceLatencyMs")
+
     override val documentContent: String
         // From https://github.com/adhorn/chaos-ssm-documents/blob/master/latency-stress.yml
         get() {
@@ -21,7 +23,9 @@ class NetworkInterfaceLatencyAttack constructor(
                 "- action: aws:runShellScript\n" +
                 "  name: ${this.documentName()}\n" +
                 "  inputs:\n" +
-                "    runCommand:\n"
+                "    runCommand:\n" +
+                "    - sudo yum -y install tc at || true\n" +
+                "    - sudo systemctl start atd || true\n"
             val chaos = "    - sudo tc qdisc add dev eth0 root netem delay " +
                 "${getNetworkInterfaceLatency()} && tc qdisc show\n"
             val scheduledChaosRollback = "    - echo \"sudo tc qdisc del dev eth0 root netem delay " +

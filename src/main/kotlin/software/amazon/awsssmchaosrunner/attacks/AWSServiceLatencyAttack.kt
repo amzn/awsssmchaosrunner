@@ -12,6 +12,7 @@ class AWSServiceLatencyAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : AbstractAWSServiceAttack(ssm, configuration) {
+    override val requiredOtherParameters = arrayOf("region", "service", "dependencyPort", "networkInterfaceLatencyMs")
 
     override val chaosContent: String
         get() {

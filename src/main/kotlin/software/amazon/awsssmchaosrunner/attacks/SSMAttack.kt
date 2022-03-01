@@ -16,6 +16,8 @@ interface SSMAttack {
     val ssm: AWSSimpleSystemsManagement
     val configuration: AttackConfiguration
     val documentContent: String
+    val requiredOtherParameters: Array<String>
+        get() = emptyArray()
 
     val timeUnitInMicroseconds: String
         get() = "us"
@@ -37,18 +39,19 @@ interface SSMAttack {
     }
 
     fun start(): Command {
-        createCommandDocument()
+        validateOtherParameters()
+        createCommandDocument(ssm, this.documentName(), this.documentContent)
 
         val request = SendCommandRequest()
-            .withDocumentName(this.documentName())
-            .withTargets(configuration.targets)
-            .withCloudWatchOutputConfig(
-                CloudWatchOutputConfig()
-                    .withCloudWatchLogGroupName(configuration.cloudWatchLogGroupName)
-                    .withCloudWatchOutputEnabled(true)
-            )
-            .withMaxConcurrency("${configuration.concurrencyPercentage}%")
-            .withTimeoutSeconds(configuration.timeoutSeconds)
+                .withDocumentName(this.documentName())
+                .withTargets(configuration.targets)
+                .withCloudWatchOutputConfig(
+                        CloudWatchOutputConfig()
+                                .withCloudWatchLogGroupName(configuration.cloudWatchLogGroupName)
+                                .withCloudWatchOutputEnabled(true)
+                )
+                .withMaxConcurrency("${configuration.concurrencyPercentage}%")
+                .withTimeoutSeconds(configuration.timeoutSeconds)
         val sendCommandResult = ssm.sendCommand(request)
         return sendCommandResult.command
     }
@@ -76,18 +79,29 @@ interface SSMAttack {
         else defaultJitterValue + timeUnitInMilliseconds
     }
 
-    fun createCommandDocument(): CreateDocumentResult? {
-        val request = CreateDocumentRequest()
-                .withDocumentFormat(DocumentFormat.YAML)
-                .withContent(documentContent)
-                .withDocumentType(DocumentType.Command)
-                .withTargetType(EC2TargetType)
-                .withName(this.documentName())
-        return ssm.createDocument(request)
+    fun validateOtherParameters() {
+        val anyMissingParams = requiredOtherParameters.map {
+            if (it == "networkInterfaceLatencyMs") configuration.otherParameters.containsKey("networkInterfaceLatencyMs") || configuration.otherParameters.containsKey("networkInterfaceLatencyUs")
+            else configuration.otherParameters.containsKey(it)
+        }.any { it == false }
+
+        if (anyMissingParams) {
+            throw RuntimeException("${configuration.name} required parameters: ${requiredOtherParameters.map { it }}")
+        }
     }
 
     companion object {
         private const val EC2TargetType = "/AWS::EC2::Instance"
+
+        fun createCommandDocument(ssm: AWSSimpleSystemsManagement, documentName: String?, documentContent: String): CreateDocumentResult? {
+            val request = CreateDocumentRequest()
+                    .withDocumentFormat(DocumentFormat.YAML)
+                    .withContent(documentContent)
+                    .withDocumentType(DocumentType.Command)
+                    .withTargetType(EC2TargetType)
+                    .withName(documentName)
+            return ssm.createDocument(request)
+        }
 
         fun getAttack(ssm: AWSSimpleSystemsManagement, configuration: AttackConfiguration): SSMAttack = when (configuration.name) {
             "NetworkInterfaceLatencyAttack" -> NetworkInterfaceLatencyAttack(ssm, configuration)
@@ -98,6 +112,7 @@ interface SSMAttack {
             "MemoryHogAttack" -> MemoryHogAttack(ssm, configuration)
             "CPUHogAttack" -> CPUHogAttack(ssm, configuration)
             "DiskHogAttack" -> DiskHogAttack(ssm, configuration)
+            "DiskSpaceAttack" -> DiskSpaceAttack(ssm, configuration)
             "AWSServiceLatencyAttack" -> AWSServiceLatencyAttack(ssm, configuration)
             "AWSServicePacketLossAttack" -> AWSServicePacketLossAttack(ssm, configuration)
             else -> throw NotImplementedError("${configuration.name} is not a valid SSMAttack")

@@ -11,6 +11,9 @@ class CPUHogAttack constructor(
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : SSMAttack {
     private val cpuStressors = 0 // Stress all available cores
+
+    override val requiredOtherParameters = arrayOf("cpuLoadPercent")
+
     override val documentContent: String
         get() {
             val documentHeader = "---\n" +
@@ -20,7 +23,9 @@ class CPUHogAttack constructor(
                 "- action: aws:runShellScript\n" +
                 "  name: ${this.documentName()}\n" +
                 "  inputs:\n" +
-                "    runCommand:\n"
+                "    runCommand:\n" +
+                "    - sudo yum -y install at || true\n" +
+                "    - sudo systemctl start atd || true\n"
             // stress-ng package is available through amazon-linux-extras in Amazon Linux 2
             // first shell command is set to retun true always, as amazon-linux-extras is only available for AL2
             val chaos = "    - sudo amazon-linux-extras install testing || true\n" +

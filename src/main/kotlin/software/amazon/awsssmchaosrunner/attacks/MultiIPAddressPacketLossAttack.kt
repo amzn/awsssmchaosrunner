@@ -11,6 +11,7 @@ class MultiIPAddressPacketLossAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : AbstractDependencyAttack(ssm, configuration) {
+    override val requiredOtherParameters = arrayOf("dependencyIpAddresses", "dependencyPort", "packetLossPercentage")
 
     override val chaosContent: String
         get() {
