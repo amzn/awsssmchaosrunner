@@ -59,9 +59,14 @@ interface FISAttack {
                 .source(getStopConditionCloudWatchAlarmArn(attackConfiguration)).build()
     }
 
-    fun stop(experiment: StartExperimentResponse, deleteExperimentTemplate: Boolean): StopExperimentResponse {
-        val stopExperimentResponse = fis.stopExperiment(StopExperimentRequest.builder()
-                .id(experiment.experiment().id()).build())
+    fun stop(experiment: StartExperimentResponse, deleteExperimentTemplate: Boolean): StopExperimentResponse? {
+        val stopExperimentResponse: StopExperimentResponse?
+        if (experiment.experiment().state().status().name in listOf("stopped", "failed", "completed", "stopping")) {
+            stopExperimentResponse = null
+        } else {
+            stopExperimentResponse = fis.stopExperiment(StopExperimentRequest.builder()
+                    .id(experiment.experiment().id()).build())
+        }
         if (deleteExperimentTemplate) {
             fis.deleteExperimentTemplate(DeleteExperimentTemplateRequest
                     .builder().id(experiment.experiment().experimentTemplateId())

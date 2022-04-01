@@ -1,13 +1,18 @@
 package software.amazon.awsssmchaosrunner.attacks.fis
 
 import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.fis.FisClient
+import software.amazon.awssdk.services.fis.model.StartExperimentResponse
+import software.amazon.awssdk.services.fis.model.StopExperimentRequest
+import software.amazon.awssdk.services.fis.model.StopExperimentResponse
 import software.amazon.awsssmchaosrunner.attacks.fis.FISSendCommandAttack.Companion.getAttack
 
 class FISAttackTest {
@@ -109,20 +114,47 @@ class FISAttackTest {
 
     @Test
     fun `when getAttack is called for CPUStress the correct FisAttack params are set`() {
-        val attack = getAttack(fis,
-                FISAttack.Companion.AttackConfiguration(
-                        targets = emptyMap(),
-                        targetsSelectionMode = "ALL",
-                        cloudWatchLogGroupArn = "",
-                        stopConditionCloudWatchAlarmArn = "",
-                        roleArn = ""),
-                FISSendCommandAttack.Companion.ActionConfiguration(
-                        name = "CPUStress",
-                        duration = "PT2M",
-                        awsRegion = Region.US_WEST_2.toString(),
-                        otherParameters = mapOf("CPU" to "0"))
-        )
+        val attack = getATestAttack(fis)
         assertThat(attack.params.get("CPU")).isEqualTo("0")
         assertThat(attack.params.get("DurationSeconds")).isEqualTo("120")
     }
+
+    @Test
+    fun `when stopAttack called it returns null from non-stoppable states`() {
+        val attack = getATestAttack(fis)
+
+        val experimentResponse = mockk<StartExperimentResponse>()
+        for (state in listOf("stopped", "failed", "completed", "stopping"))
+        {
+            every { experimentResponse.experiment().state().status().name } returns state
+            assertThat(attack.stop(experimentResponse, false)).isEqualTo(null)
+        }
+    }
+
+    @Test
+    fun `when stopAttack called it returns response from stoppable states`() {
+        val experimentResponse = mockk<StartExperimentResponse>()
+        val stopExperimentResponse = mockk<StopExperimentResponse>()
+        val fis = mockk<FisClient>()
+        val attack = getATestAttack(fis)
+
+        every { experimentResponse.experiment().state().status().name } returns "running"
+        every { experimentResponse.experiment().id() } returns "test"
+        every { fis.stopExperiment(StopExperimentRequest.builder().id("test").build()) } returns stopExperimentResponse
+        assertThat(attack.stop(experimentResponse, false)).isEqualTo(stopExperimentResponse)
+    }
+
+    private fun getATestAttack(fis: FisClient) = getAttack(fis,
+            FISAttack.Companion.AttackConfiguration(
+                    targets = emptyMap(),
+                    targetsSelectionMode = "ALL",
+                    cloudWatchLogGroupArn = "",
+                    stopConditionCloudWatchAlarmArn = "",
+                    roleArn = ""),
+            FISSendCommandAttack.Companion.ActionConfiguration(
+                    name = "CPUStress",
+                    duration = "PT2M",
+                    awsRegion = Region.US_WEST_2.toString(),
+                    otherParameters = mapOf("CPU" to "0"))
+    )
 }
