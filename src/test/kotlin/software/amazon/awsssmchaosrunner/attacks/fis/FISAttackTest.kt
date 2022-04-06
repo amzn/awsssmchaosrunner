@@ -124,8 +124,7 @@ class FISAttackTest {
         val attack = getATestAttack(fis)
 
         val experimentResponse = mockk<StartExperimentResponse>()
-        for (state in listOf("stopped", "failed", "completed", "stopping"))
-        {
+        for (state in listOf("stopped", "failed", "completed", "stopping")) {
             every { experimentResponse.experiment().state().status().name } returns state
             assertThat(attack.stop(experimentResponse, false)).isEqualTo(null)
         }
