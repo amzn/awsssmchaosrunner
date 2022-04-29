@@ -36,6 +36,8 @@ dependencies {
     implementation 'io.github.microutils:kotlin-logging:1.+'
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.+'
     implementation 'org.slf4j:slf4j-api:1.+'
+    implementation 'software.amazon.awssdk:fis:2.+'
+    implementation 'org.json:json:20+'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:[5.6,)'
     testImplementation 'io.mockk:mockk:[1.9,)'

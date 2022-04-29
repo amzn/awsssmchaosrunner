@@ -14,6 +14,7 @@ class DependencyLatencyAttack constructor(
     override val ssm: AWSSimpleSystemsManagement,
     override val configuration: SSMAttack.Companion.AttackConfiguration
 ) : AbstractDependencyAttack(ssm, configuration) {
+    override val requiredOtherParameters = arrayOf("dependencyEndpoint", "dependencyPort", "networkInterfaceLatencyMs")
 
     override val chaosContent: String
         get() {
