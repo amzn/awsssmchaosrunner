@@ -4,13 +4,15 @@
 
 ## AWSSSMChaosRunner
 AWSSSMChaosRunner is a library which simplifies failure injection testing and chaos engineering for [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) and [ECS (with EC2 launch type)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-ecs-ec2.html). 
-It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html) for failure injection.
+It offers the following options for failure injection - 
+  * [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_SendCommand.html)
+  * [AWS Fault Injection Simulator](https://aws.amazon.com/fis/)
 
 ![](./AWSSSMChaosRunner.png)
 
 **An in-depth introduction to this library and how Prime Video uses it can be found here** - https://aws.amazon.com/blogs/opensource/building-resilient-services-at-prime-video-with-chaos-engineering/   
 
-### Usage for EC2
+### Usage with AWS Systems Manager SendCommand
 1. **Setup permissions for calling SSM from tests package**
 
     This can be done in many different ways. The approach described here generates temporary credentials for AWS SSM on each run of the tests. To enable this the following are needed
@@ -133,6 +135,122 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
     ```
 1. **Run the test**
 
+### Usage with AWS FIS
+1. **Setup permissions for calling SSM from tests package**
+
+   This can be done in many different ways. The approach described here generates temporary credentials for AWS SSM on each run of the tests. To enable this the following are needed
+
+    * An IAM role with the following permissions.
+      (JSON snippet)
+        ```json
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": [
+                        "sts:AssumeRole",
+                        "ec2:DescribeInstances",
+                        "iam:ListRoles",
+                        "ssm:ListCommands",
+                        "ssm:SendCommand",
+                        "ssm:CancelCommand",
+                        "iam:PassRole",
+                        "ec2:RebootInstances",
+                        "ec2:StopInstances",
+                        "ec2:StartInstances",
+                        "ec2:TerminateInstances",
+                        "fis:InjectApiInternalError",
+                        "fis:InjectApiThrottleError",
+                        "fis:InjectApiUnavailableError",
+                        "fis:ListExperimentTemplates",
+                        "fis:ListActions",
+                        "fis:ListTargetResourceTypes",
+                        "fis:ListExperiments",
+                        "fis:GetTargetResourceType",
+                        "fis:CreateExperimentTemplate",
+                        "fis:DeleteExperimentTemplate",
+                        "fis:StopExperiment",
+                        "fis:StartExperiment"                    
+                    ],
+                    "Resource": [
+                        "*"
+                    ],
+                    "Effect": "Allow"
+                },
+                {
+                    "Action": [
+                        "iam:CreateServiceLinkedRole"
+                    ],
+                    "Resource": [
+                        "*"
+                    ],
+                    "Effect": "Allow",
+                    "Conditions": {
+                          "StringEquals": {
+                               "iam:AWSServiceName": "fis.amazonaws.com"
+                          }
+                    }
+                }
+            ]
+        }
+        ```
+    * An IAM user which can assume the above role.
+
+2. **Add `AWSSSMChaosRunner` maven dependency to your tests package**
+    ```
+    <dependency>
+      <groupId>software.amazon.awsssmchaosrunner</groupId>
+      <artifactId>awsssmchaosrunner</artifactId>
+      <version>1.3.0</version>
+    </dependency> 
+    ```
+
+1. **Initialise the FIS Client**
+   (Kotlin snippet)
+    ```java
+   //Java code snippet
+    String executionRoleArn = getenv("EXECUTION_ROLE_ARN");
+    Region awsRegion = Region.of(getenv("AWS_REGION"));
+
+    StsClient stsClient = StsClient.builder().build();
+    StsAssumeRoleCredentialsProvider assumeRoleCredentialsProvider = StsAssumeRoleCredentialsProvider.builder()
+           .refreshRequest(AssumeRoleRequest.builder()
+                    .roleArn(executionRoleArn)
+                    .roleSessionName("ChaosRunnerSession")
+                    .build())
+                    .stsClient(stsClient)
+                    .build();
+    FisClient fisClient = FisClient.builder().credentialsProvider(assumeRoleCredentialsProvider).region(awsRegion).build();
+    ```
+
+1. **Configure and execute the FIS failure injection**
+    ```java
+    String targetsSelectionMode = "ALL";
+    String cloudWatchLogGroupArn = "";
+    String stopConditionCloudWatchAlarmArn = "";
+    String name = "IOStress"; // This failure injection consumes disk space
+    String duration = "PT2M";
+    Map<String, String> otherFailureInjectionParameters = Collections.emptyMap();
+    
+    FISAttack.Companion.AttackConfiguration attackConfiguration = new FISAttack.Companion.AttackConfiguration(targets,
+            targetsSelectionMode,
+            cloudWatchLogGroupArn,
+            stopConditionCloudWatchAlarmArn,
+            executionRoleArn);
+    FISSendCommandAttack.Companion.ActionConfiguration actionConfiguration = new FISSendCommandAttack.Companion.ActionConfiguration(
+            name,
+            duration,
+            awsRegion.toString(),
+            otherFailureInjectionParameters
+    );
+    FISAttack fisAttack = FISSendCommandAttack.Companion.getAttack(fisClient, attackConfiguration, actionConfiguration);
+    StartExperimentResponse experiment = fisAttack.start();
+    ...
+    ...
+    boolean deleteExperimentTemplate = false;
+    fisAttack.stop(experiment, deleteExperimentTemplate);
+    ```
+
 ## FAQs
 
 * **What about [Chaos-SSM-Documents](https://github.com/adhorn/chaos-ssm-documents) (github repo) ?**
@@ -162,6 +280,7 @@ It uses the [AWS Systems Manager SendCommand](https://docs.aws.amazon.com/system
     * [AWSServicePacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/AWSServicePacketLossAttack.kt) - Drops packets to an AWS service using the CIDR ranges returned from https://ip-ranges.amazonaws.com/ip-ranges.json. This is necessary for services like S3 or DynamoDB where the resolved IPAddress can change during the chaos attack.
     * [MultiIPAddressLatencyAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/MultiIPAddressLatencyAttack.kt) - Adds latencies to calls to a list of dependencies specified by IPAddress. This could be useful for a router -> host kind of a setup.
     * [MultiIPAddressPacketLossAttack](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/MultiIPAddressPacketLossAttack.kt) - Drops packets from calls to a list of dependencies specified by IPAddress. This could be useful for a router -> host kind of a setup.
+    * Fault Injection Simulator (FIS) attacks - All the FIS SSM agent attacks are supported. [Full list](./src/main/kotlin/software/amazon/awsssmchaosrunner/attacks/fis/FISSendCommandAttack.kt)
     
 * **What about other failure injections ?**
 
